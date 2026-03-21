@@ -39,19 +39,37 @@ class AppShell extends StatelessWidget {
 
     return Scaffold(
       body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _tabIndex(location),
-        onTap: (index) => _onTap(context, index),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car_outlined),
-            activeIcon: Icon(Icons.directions_car),
-            label: 'Drive Tracker',
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          MediaQuery.removePadding(
+            context: context,
+            removeBottom: true,
+            child: BottomNavigationBar(
+              currentIndex: _tabIndex(location),
+              onTap: (index) => _onTap(context, index),
+              type: BottomNavigationBarType.fixed,
+              selectedFontSize: 12,
+              unselectedFontSize: 12,
+              iconSize: 24,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.directions_car_outlined),
+                  activeIcon: Icon(Icons.directions_car),
+                  label: 'Drive Tracker',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings_outlined),
+                  activeIcon: Icon(Icons.settings),
+                  label: 'Contract',
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: 'Contract',
+          Container(
+            color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
+                Theme.of(context).colorScheme.surface,
+            height: MediaQuery.of(context).padding.bottom,
           ),
         ],
       ),
