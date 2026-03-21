@@ -9,7 +9,11 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Contract Settings')),
-      body: SettingsForm(),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: const SettingsForm(),
+      ),
     );
   }
 }

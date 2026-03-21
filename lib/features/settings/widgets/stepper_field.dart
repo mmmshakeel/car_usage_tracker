@@ -57,11 +57,13 @@ class _StepperFieldState extends State<StepperField> {
   }
 
   void _decrement() {
+    FocusScope.of(context).unfocus();
     final next = (_current - widget.step).clamp(widget.min, double.maxFinite.toInt());
     widget.onChanged(next);
   }
 
   void _increment() {
+    FocusScope.of(context).unfocus();
     widget.onChanged(_current + widget.step);
   }
 
@@ -108,7 +110,9 @@ class _StepperFieldState extends State<StepperField> {
                     borderSide: BorderSide(color: Colors.grey.shade300),
                   ),
                 ),
+                textInputAction: TextInputAction.done,
                 onChanged: _onTextChanged,
+                onSubmitted: (_) => FocusScope.of(context).unfocus(),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
