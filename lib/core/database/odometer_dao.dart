@@ -9,8 +9,13 @@ class OdometerDao extends DatabaseAccessor<AppDatabase>
     with _$OdometerDaoMixin {
   OdometerDao(super.db);
 
-  Future<int> insertEntry(OdometerEntriesCompanion entry) =>
-      into(odometerEntries).insert(entry);
+  Future<void> upsertEntry(OdometerEntriesCompanion entry) {
+    final d = entry.date.value;
+    final normalized = DateTime(d.year, d.month, d.day);
+    return into(odometerEntries).insertOnConflictUpdate(
+      entry.copyWith(date: Value(normalized)),
+    );
+  }
 
   Future<bool> updateEntry(OdometerEntriesCompanion entry) =>
       update(odometerEntries).replace(entry);

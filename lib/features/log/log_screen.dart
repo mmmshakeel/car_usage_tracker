@@ -83,7 +83,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
     setState(() => _isSaving = true);
     try {
       final db = ref.read(databaseProvider);
-      await db.odometerDao.insertEntry(
+      await db.odometerDao.upsertEntry(
         OdometerEntriesCompanion(
           date: Value(_selectedDate),
           odometerKm: Value(_odometerKm),
