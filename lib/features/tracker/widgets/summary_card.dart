@@ -74,6 +74,14 @@ class _Content extends StatelessWidget {
         _StatRow(label: 'Driven in contract', value: '${stats.kmDrivenInContract} km'),
         _StatRow(label: 'Remaining km', value: '${stats.remainingKm} km'),
         _StatRow(label: 'Days remaining', value: '${stats.remainingDays} days'),
+        _StatRow(
+          label: 'Avg daily drive',
+          value: '${stats.avgDailyDrive.toStringAsFixed(1)} km/day',
+        ),
+        _StatRow(
+          label: 'Recommended daily drive',
+          value: '${stats.maxKmPerDayRemaining.toStringAsFixed(1)} km/day',
+        ),
       ],
     );
   }

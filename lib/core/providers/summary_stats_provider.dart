@@ -33,12 +33,17 @@ SummaryStats? summaryStats(SummaryStatsRef ref) {
   final maxKmPerDayRemaining =
       remainingDays > 0 ? remainingKm / remainingDays : 0.0;
 
+  final daysSinceStart = today.difference(settings.leaseStartDate).inDays;
+  final avgDailyDrive =
+      daysSinceStart > 0 ? kmDrivenInContract / daysSinceStart : 0.0;
+
   return SummaryStats(
     kmDrivenInContract: kmDrivenInContract,
     remainingKm: remainingKm,
     remainingDays: remainingDays,
     maxKmPerDayIdeal: maxKmPerDayIdeal,
     maxKmPerDayRemaining: maxKmPerDayRemaining,
+    avgDailyDrive: avgDailyDrive,
     latestOdometerKm: latestOdometerKm,
     lastUpdated: lastUpdated,
   );

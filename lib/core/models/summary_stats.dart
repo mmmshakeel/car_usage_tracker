@@ -4,6 +4,7 @@ class SummaryStats {
   final int remainingDays;
   final double maxKmPerDayIdeal;
   final double maxKmPerDayRemaining;
+  final double avgDailyDrive;
   final int latestOdometerKm;
   final DateTime? lastUpdated;
 
@@ -13,6 +14,7 @@ class SummaryStats {
     required this.remainingDays,
     required this.maxKmPerDayIdeal,
     required this.maxKmPerDayRemaining,
+    required this.avgDailyDrive,
     required this.latestOdometerKm,
     this.lastUpdated,
   });
