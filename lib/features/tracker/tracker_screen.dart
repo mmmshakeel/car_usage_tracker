@@ -13,7 +13,7 @@ class TrackerScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statsAsync = ref.watch(summaryStatsProvider);
-    final entriesAsync = ref.watch(odometerEntriesProvider);
+    final months = ref.watch(monthlyKmProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Car Usage Track')),
@@ -29,17 +29,7 @@ class TrackerScreen extends ConsumerWidget {
                   ),
             ),
             const SizedBox(height: AppSpacing.md),
-            entriesAsync.when(
-              data: (entries) => UsageChart(entries: entries),
-              loading: () => const SizedBox(
-                height: 200,
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (e, _) => SizedBox(
-                height: 200,
-                child: Center(child: Text('Error loading chart: $e')),
-              ),
-            ),
+            UsageChart(months: months),
             const SizedBox(height: AppSpacing.md),
             if (statsAsync != null)
               SummaryCard(stats: statsAsync)
@@ -57,19 +47,14 @@ class TrackerScreen extends ConsumerWidget {
 class _CtaRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            'Ready to add mileage?',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ),
-        ElevatedButton(
+    return Center(
+      child: SizedBox(
+        width: 200,
+        child: ElevatedButton(
           onPressed: () => context.push('/log'),
-          child: const Text('Log Mileage'),
+          child: const Text('Log Odometer'),
         ),
-      ],
+      ),
     );
   }
 }

@@ -28,7 +28,7 @@ final odometerEntriesProvider =
 typedef OdometerEntriesRef = AutoDisposeStreamProviderRef<List<OdometerEntry>>;
 String _$kmDrivenPerEntryHash() => r'277805edcffc7a6e180784c47d81e1e6ba69914c';
 
-/// Entries enriched with computed [kmDriven] per entry.
+/// km driven per entry, enriched with the computed [kmDriven] field.
 ///
 /// Copied from [kmDrivenPerEntry].
 @ProviderFor(kmDrivenPerEntry)
@@ -46,5 +46,24 @@ final kmDrivenPerEntryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef KmDrivenPerEntryRef = AutoDisposeProviderRef<List<OdometerEntryModel>>;
+String _$monthlyKmHash() => r'42e55288a3672af3fd630315637acffb43dd405e';
+
+/// Monthly km driven aggregated across the full lease contract period.
+/// Falls back to a 12-month rolling window if contract settings are not set.
+///
+/// Copied from [monthlyKm].
+@ProviderFor(monthlyKm)
+final monthlyKmProvider = AutoDisposeProvider<List<MonthBucket>>.internal(
+  monthlyKm,
+  name: r'monthlyKmProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$monthlyKmHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef MonthlyKmRef = AutoDisposeProviderRef<List<MonthBucket>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

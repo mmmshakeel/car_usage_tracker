@@ -2,21 +2,37 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/database/app_database.dart';
+import '../../../core/models/month_bucket.dart';
 import '../../../core/theme/app_theme.dart';
 
 class UsageChart extends StatelessWidget {
-  const UsageChart({super.key, required this.entries});
+  const UsageChart({super.key, required this.months});
 
-  final List<OdometerEntry> entries;
+  final List<MonthBucket> months;
 
   @override
   Widget build(BuildContext context) {
-    if (entries.isEmpty) {
+    if (months.isEmpty) {
       return _EmptyChart();
     }
 
-    final barGroups = _buildBarGroups();
+    final barGroups = months.indexed.map((record) {
+      final (i, bucket) = record;
+      return BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY: bucket.kmDriven,
+            color: bucket.kmDriven > 0 ? AppColors.chartBar : Colors.grey.shade200,
+            width: 12,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+          ),
+        ],
+      );
+    }).toList();
+
+    // Show a label every 3 months to avoid crowding.
+    const labelInterval = 3;
 
     return SizedBox(
       height: 220,
@@ -29,13 +45,16 @@ class UsageChart extends StatelessWidget {
                 showTitles: true,
                 getTitlesWidget: (value, meta) {
                   final idx = value.toInt();
-                  if (idx < 0 || idx >= entries.length) {
+                  if (idx < 0 || idx >= months.length) {
                     return const SizedBox.shrink();
                   }
-                  final label = DateFormat('MMM').format(entries[idx].date);
+                  if (idx % labelInterval != 0) {
+                    return const SizedBox.shrink();
+                  }
+                  final label = DateFormat('MMM yy').format(months[idx].date);
                   return Padding(
                     padding: const EdgeInsets.only(top: AppSpacing.xs),
-                    child: Text(label, style: const TextStyle(fontSize: 10)),
+                    child: Text(label, style: const TextStyle(fontSize: 9)),
                   );
                 },
               ),
@@ -52,31 +71,24 @@ class UsageChart extends StatelessWidget {
           ),
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
-          barTouchData: BarTouchData(enabled: true),
+          barTouchData: BarTouchData(
+            enabled: true,
+            touchTooltipData: BarTouchTooltipData(
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                final bucket = months[group.x];
+                if (bucket.kmDriven == 0) return null;
+                final month = DateFormat('MMM yyyy').format(bucket.date);
+                return BarTooltipItem(
+                  '$month\n${bucket.kmDriven.toStringAsFixed(0)} km',
+                  const TextStyle(color: Colors.white, fontSize: 11),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
   }
-
-  List<BarChartGroupData> _buildBarGroups() {
-    return entries.indexed.map((record) {
-      final (i, entry) = record;
-      final kmDriven =
-          i > 0 ? (entry.odometerKm - entries[i - 1].odometerKm).toDouble() : 0.0;
-      return BarChartGroupData(
-        x: i,
-        barRods: [
-          BarChartRodData(
-            toY: kmDriven,
-            color: AppColors.chartBar,
-            width: 12,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
-          ),
-        ],
-      );
-    }).toList();
-  }
-
 }
 
 class _EmptyChart extends StatelessWidget {
