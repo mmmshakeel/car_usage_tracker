@@ -1,30 +1,41 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:car_usage_tracker/core/database/app_database.dart';
+import 'package:drift/drift.dart' show Value;
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:car_usage_tracker/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('persists tracker settings and orders odometer entries by date',
+      () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await database.settingsDao.saveSettings(
+      ContractSettingsTableCompanion(
+        leaseStartDate: Value(DateTime(2026, 1, 1)),
+        leaseEndDate: Value(DateTime(2027, 1, 1)),
+        contractDurationDays: const Value(365),
+        startingOdometerKm: const Value(10000),
+        maxKmPerContract: const Value(15000),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await database.odometerDao.upsertEntry(
+      OdometerEntriesCompanion(
+        date: Value(DateTime(2026, 2, 2)),
+        odometerKm: const Value(10300),
+      ),
+    );
+    await database.odometerDao.upsertEntry(
+      OdometerEntriesCompanion(
+        date: Value(DateTime(2026, 2, 1)),
+        odometerKm: const Value(10100),
+      ),
+    );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    final settings = await database.settingsDao.watchSettings().first;
+    final entries = await database.odometerDao.watchAllEntries().first;
+
+    expect(settings?.startingOdometerKm, 10000);
+    expect(entries.map((entry) => entry.odometerKm), [10100, 10300]);
   });
 }

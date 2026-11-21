@@ -1,12 +1,13 @@
 {
-    "name": "car_usage_tracker",
-    "short_name": "car_usage_tracker",
+    "name": "Car Usage Tracker",
+    "short_name": "Car Tracker",
+    "id": ".",
     "start_url": ".",
+    "scope": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
+    "background_color": "#FFFFFF",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "description": "Track lease-car mileage and contract usage, even offline.",
     "prefer_related_applications": false,
     "icons": [
         {

@@ -31,7 +31,9 @@ class ContractSettingsTable extends Table {
   daos: [OdometerDao, SettingsDao],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  /// Supplying an executor is useful for tests. Production uses the platform
+  /// appropriate Drift connection configured in [_openConnection].
+  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
   int get schemaVersion => 2;
@@ -62,6 +64,14 @@ class AppDatabase extends _$AppDatabase {
       );
 
   static QueryExecutor _openConnection() {
-    return driftDatabase(name: 'car_usage_tracker');
+    return driftDatabase(
+      name: 'car_usage_tracker',
+      web: DriftWebOptions(
+        // These relative URLs resolve from Flutter's base href, so they work
+        // both at the site root and at a GitHub Pages repository path.
+        sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+        driftWorker: Uri.parse('drift_worker.js'),
+      ),
+    );
   }
 }
